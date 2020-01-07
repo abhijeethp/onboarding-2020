@@ -33,8 +33,8 @@ function get_machines_move() {
 }
 
 function load_score(){
-  #score_gcloud=$(curl "https://us-central1-singular-vector-135519.cloudfunctions.net/rps_get_score?user=kaiwatsatsat" | jq)
-  IFS="," read -a scores <<< "$(cat score.txt)"
+  #IFS="," read -a scores <<< "$(cat score.txt)"
+  IFS="," read -a scores <<< "$(curl "https://us-central1-singular-vector-135519.cloudfunctions.net/rps_get_score?user=kaiwatsatsat" | jq -r '"\(.man_score),\(.machine_score)"')"
   mans_score=${scores[0]}
   machines_score=${scores[1]}
   echo "scores : man->$mans_score machine->$machines_score"
@@ -56,7 +56,8 @@ function get_winner() {
 function store_score() {
   #curl --data "user=abhijeet&man_score=$mans_score&machine_score=$machines_score" https://us-central1-singular-vector-135519.cloudfunctions.net/rps_set_score"
   echo "scores : man->$mans_score machine->$machines_score"
-  echo "$mans_score,$machines_score" > score.txt
+  #echo "$mans_score,$machines_score" > score.txt
+  exec curl --data "user=kaiwatsatsat&man_score=$mans_score&machine_score=$machines_score" https://us-central1-singular-vector-135519.cloudfunctions.net/rps_set_score
 }
 
 load_score
